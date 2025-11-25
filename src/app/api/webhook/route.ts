@@ -6,7 +6,7 @@ import {
   CallSessionStartedEvent,
 } from "@stream-io/node-sdk";
 
-import { and, eq, not } from "drizzle-orm";
+import { and, eq} from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { agents, meetings } from "@/db/schema";
@@ -80,7 +80,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Agent not found" }, { status: 404 });
     }
 
-    const call = streamVideo.video.call("default", meetingId);
+    const call =  streamVideo.video.call("default", meetingId);
+
     const realTimeClient = await streamVideo.video.connectOpenAi({
       call,
       openAiApiKey: process.env.OPEN_AI_KEY!,
@@ -90,7 +91,6 @@ export async function POST(req: NextRequest) {
     realTimeClient.updateSession({
       instructions: existingAgent.instructions,
     });
-    console.log("This is runing successfully.");
   } else if (eventType === "call.session_participant_left") {
     const event = payload as CallSessionParticipantLeftEvent;
     const meetingId = event.call_cid.split(":")[1];
